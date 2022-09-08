@@ -1,0 +1,98 @@
+JAVA INSTALLATION AND PATH SETUP
+------------------------------------------
+
+Step:1 But before installing Jenkins, we have to install our Java SDK
+	--> amazon-linux-extras install epel
+Step:2 and then install JDK using
+	--> amazon-linux-extras install java-openjdk11
+Step:3 Check java version
+	--> java -version
+Step:4 Set java path
+	--> export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.13.0.8-1.amzn2.0.3.x86_64
+	--> export PATH=$JAVA_HOME/bin:/usr/sbin:$MYSQL_HOME/bin:$PATH
+Step:5 source ~/.bash_profile
+
+
+DOWNLOAD AND INSTALL MAVEN
+------------------------------------------
+To download and install maven:
+
+create maven folder inside opt (opt/maven)
+
+Step:1 wget https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+step:2 tar -xvzf apache-maven-3.8.6-bin.tar.gz
+step:3 set path
+
+M2_HOME=/opt/maven/apache-maven-3.8.6
+M2=$M2_HOME/bin
+
+PATH=$PATH:$JAVA_HOME/bin:$M2_HOME:$M2:$HOME/bin
+
+
+
+DOWNLOAD AND INSTALL JENKINS
+------------------------------------------
+To download and install Jenkins:
+
+Step:1 To ensure that your software packages are up to date on your instance, use the following command to perform a quick software update:
+
+	--> [ec2-user ~]$ sudo yum update –y
+
+Step:2 Add the Jenkins repo using the following command:
+
+	--> [ec2-user ~]$ sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+Step:3 Import a key file from Jenkins-CI to enable installation from the package:
+
+	-->[ec2-user ~]$ sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+	-->[ec2-user ~]$ sudo yum upgrade
+
+Step:4 Install Java if not installed:
+	-->[ec2-user ~]$ sudo amazon-linux-extras install java-openjdk11 -y
+
+Step:5 Install Jenkins:
+	-->[ec2-user ~]$ sudo yum install jenkins -y
+
+Step:6 Enable the Jenkins service to start at boot:
+	-->[ec2-user ~]$ sudo systemctl enable jenkins
+
+Step:7 Start Jenkins as a service:
+	-->[ec2-user ~]$ sudo systemctl start jenkins
+
+Step:8 You can check the status of the Jenkins service using the command:
+	-->[ec2-user ~]$ sudo systemctl status jenkins
+
+
+DOWNLOAD AND INSTALL TOMCAT SERVER
+------------------------------------------
+To download and install tomact:
+
+create tomcat folder inside opt (opt/tomcat)
+
+Step:1 wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.64/bin/apache-tomcat-9.0.64.tar.gz
+step:2 tar -xvzf apache-tomcat-9.0.64.tar.gz
+        give executing permissions to startup.sh and shutdown.sh which are under bin
+        
+        chmod +x /opt/apache-tomcat-9.0.64/bin/startup.sh shutdown.sh
+        
+step:3 To check tomcat service is start  ps -ef | grep tomcat
+step:4 TO start service we set path (create soft link) ln -s /opt/tomacat/apache-tomcat-9.0.64/bin/startup.sh /usr/bin/tomcatup
+step:5 TO stop service we set path (create soft link) ln -s /opt/tomacat/apache-tomcat-9.0.64/bin/shutdown.sh  /usr/bin/tomcatdown
+step:6 To change server port goto vi /bin/conf/server.xml change port 8080 to 8090
+step6: Make sure you have added the port to security group in your ec2 instances.
+step7: Search for context.xml  #find / -name context.xml
+        Comment the value.
+step:8 Add user in vi tomcat-users.xml
+
+    <role rolename="manager-gui"/>
+	<role rolename="manager-script"/>
+	<role rolename="manager-jmx"/>
+	<role rolename="manager-status"/>
+	<user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>
+	<user username="deployer" password="deployer" roles="manager-script"/>
+	<user username="tomcat" password="s3cret" roles="manager-gui"/>
+
+
+
+
